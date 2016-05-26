@@ -123,13 +123,15 @@ class Lookup(Thread):
             self.listed[self.dnslist]['ERROR'] = True
             self.listed[self.dnslist]['ERRORTYPE'] = NoAnswer
 
+
 class RBLSearch(object):
-    def __init__(self, lookup_host):
+    def __init__(self, lookup_host, my_rbl_list=None):
         self.lookup_host = lookup_host
         self._listed = None
         self.resolver = Resolver()
         self.resolver.timeout = 0.2
         self.resolver.lifetime = 1.0
+        self.my_rbl_list = my_rbl_list
 
     def search(self):
         if self._listed is not None:
@@ -143,7 +145,13 @@ class RBLSearch(object):
                 host = re.sub('.ip6.arpa.', '', host)
             self._listed = {'SEARCH_HOST': self.lookup_host}
             threads = []
-            for LIST in RBLS:
+
+            lists_to_check = RBLS
+
+            if self.my_rbl_list:
+                lists_to_check = self.my_rbl_list
+
+            for LIST in lists_to_check:
                 self._listed[LIST] = {'LISTED': False}
                 query = Lookup("%s.%s" % (host, LIST), LIST, self._listed, self.resolver)
                 threads.append(query)
