@@ -98,6 +98,7 @@ class Lookup(Thread):
         self.resolver = resolver
 
     def run(self):
+
         try:
             host_record = self.resolver.query(self.host, "A")
             if len(host_record) > 0:
@@ -137,13 +138,40 @@ class RBLSearch(object):
         if self._listed is not None:
             pass
         else:
-            ip = IP(self.lookup_host)
-            host = ip.reverseName()
-            if ip.version() == 4:
-                host = re.sub('.in-addr.arpa.', '', host)
-            elif ip.version() == 6:
-                host = re.sub('.ip6.arpa.', '', host)
+
+            try:
+                ip = IP(self.lookup_host)
+            except ValueError:
+                ip = None
+
             self._listed = {'SEARCH_HOST': self.lookup_host}
+
+            if ip:
+
+                host = ip.reverseName()
+                if ip.version() == 4:
+                    host = re.sub('.in-addr.arpa.', '', host)
+                elif ip.version() == 6:
+                    host = re.sub('.ip6.arpa.', '', host)
+            else:
+
+                try:
+                    socket.gethostbyname(self.lookup_host)
+                    host = self.lookup_host
+                except socket.gaierror:
+                    self._listed['SEARCH_HOST'] = {
+                        'ERROR': True,
+                        'ERRORTYPE': socket.gaierror
+                    }
+                except socket.herror:
+                    self._listed['SEARCH_HOST'] = {
+                        'ERROR': True,
+                        'ERRORTYPE': socket.herror
+                    }
+
+            if 'ERROR' in self._listed['SEARCH_HOST']:
+                return self._listed
+
             threads = []
 
             lists_to_check = RBLS
@@ -167,7 +195,12 @@ class RBLSearch(object):
         print("--- DNSBL Report for %s ---" % listed['SEARCH_HOST'])
         for key in listed:
             if key == 'SEARCH_HOST':
-                continue
+                if not 'ERROR' in listed['SEARCH_HOST']:
+                    continue
+                else:
+                    print "Error querying for %s" % self.lookup_host
+                    break
+
             if not listed[key].get('ERROR'):
                 if listed[key]['LISTED']:
                     print("Results for %s: %s" % (key, listed[key]['LISTED']))
