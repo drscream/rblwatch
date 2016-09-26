@@ -125,6 +125,7 @@ class Lookup(Thread):
             self.listed[self.dnslist]['ERROR'] = True
             self.listed[self.dnslist]['ERRORTYPE'] = NoAnswer
 
+
 class RBLSearch(object):
     def __init__(self, lookup_host):
         self.lookup_host = lookup_host
@@ -147,7 +148,8 @@ class RBLSearch(object):
             threads = []
             for LIST in RBLS:
                 self._listed[LIST] = {'LISTED': False}
-                query = Lookup("%s.%s" % (host, LIST), LIST, self._listed, self.resolver)
+                query = Lookup(
+                    "%s.%s" % (host, LIST), LIST, self._listed, self.resolver)
                 threads.append(query)
                 query.start()
             for thread in threads:
@@ -165,13 +167,13 @@ class RBLSearch(object):
             if not listed[key].get('ERROR'):
                 if listed[key]['LISTED']:
                     print("Results for %s: %s" % (key, listed[key]['LISTED']))
-                    print("  + Host information: %s" % \
+                    print("  + Host information: %s" %
                           (listed[key]['HOST']))
                 if 'TEXT' in listed[key].keys():
-                    print("    + Additional information: %s" % \
+                    print("    + Additional information: %s" %
                           (listed[key]['TEXT']))
             else:
-                #print "*** Error contacting %s ***" % key
+                # print "*** Error contacting %s ***" % key
                 pass
 
 if __name__ == "__main__":
@@ -185,7 +187,7 @@ if __name__ == "__main__":
             if not is_ip_address:
                 try:
                     ip = socket.gethostbyname(ip)
-                    print("Hostname %s resolved to ip %s" % (sys.argv[1],ip))
+                    print("Hostname %s resolved to ip %s" % (sys.argv[1], ip))
                 except socket.error:
                     print("IP %s can't be resolved" % ip)
                     ip = ""
