@@ -131,7 +131,7 @@ class RBLSearch(object):
         self.resolver.timeout = 0.2
         self.resolver.lifetime = 1.0
 
-    def search(self):
+    def search(self, RBLS=RBLS):
         if self._listed is not None:
             pass
         else:
