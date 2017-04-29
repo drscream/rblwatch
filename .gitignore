@@ -4,3 +4,4 @@
 # distutils
 dist/
 MANIFEST
+build/

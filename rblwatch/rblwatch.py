@@ -106,7 +106,9 @@ class Lookup(Thread):
                 self.listed[self.dnslist]['HOST'] = host_record[0].address
                 text_record = self.resolver.query(self.host, "TXT")
                 if len(text_record) > 0:
-                    self.listed[self.dnslist]['TEXT'] = b"\n".join(text_record[0].strings)
+                    self.listed[self.dnslist]['TEXT'] = "\n".join(
+                        [resp.decode('utf-8') for resp in
+                            text_record[0].strings])
             self.listed[self.dnslist]['ERROR'] = False
 
             if b'query refused' in self.listed[self.dnslist]['TEXT'].lower():
@@ -139,7 +141,7 @@ class RBLSearch(object):
         self.resolver.lifetime = 1.0
         self.my_rbl_list = my_rbl_list
 
-    def search(self):
+    def search(self, RBLS=RBLS):
         if self._listed is not None:
             pass
         else:
@@ -186,7 +188,8 @@ class RBLSearch(object):
 
             for LIST in lists_to_check:
                 self._listed[LIST] = {'LISTED': False}
-                query = Lookup("%s.%s" % (host, LIST), LIST, self._listed, self.resolver)
+                query = Lookup(
+                    "%s.%s" % (host, LIST), LIST, self._listed, self.resolver)
                 threads.append(query)
                 query.start()
             for thread in threads:
@@ -209,13 +212,13 @@ class RBLSearch(object):
             if not listed[key].get('ERROR'):
                 if listed[key]['LISTED']:
                     print("Results for %s: %s" % (key, listed[key]['LISTED']))
-                    print("  + Host information: %s" % \
+                    print("  + Host information: %s" %
                           (listed[key]['HOST']))
                 if 'TEXT' in listed[key].keys():
-                    print("    + Additional information: %s" % \
+                    print("    + Additional information: %s" %
                           (listed[key]['TEXT']))
             else:
-                #print "*** Error contacting %s ***" % key
+                # print "*** Error contacting %s ***" % key
                 pass
 
 if __name__ == "__main__":
@@ -229,7 +232,7 @@ if __name__ == "__main__":
             if not is_ip_address:
                 try:
                     ip = socket.gethostbyname(ip)
-                    print("Hostname %s resolved to ip %s" % (sys.argv[1],ip))
+                    print("Hostname %s resolved to ip %s" % (sys.argv[1], ip))
                 except socket.error:
                     print("IP %s can't be resolved" % ip)
                     ip = ""
