@@ -106,13 +106,13 @@ class Lookup(Thread):
                 self.listed[self.dnslist]['HOST'] = host_record[0].address
                 text_record = self.resolver.query(self.host, "TXT")
                 if len(text_record) > 0:
-                    self.listed[self.dnslist]['TEXT'] = "\n".join(text_record[0].strings)
+                    self.listed[self.dnslist]['TEXT'] = b"\n".join(text_record[0].strings)
             self.listed[self.dnslist]['ERROR'] = False
-            
-            if 'query refused' in self.listed[self.dnslist]['TEXT'].lower():
+
+            if b'query refused' in self.listed[self.dnslist]['TEXT'].lower():
                 self.listed[self.dnslist]['LISTED'] = False
                 self.listed[self.dnslist]['ERROR'] = True
-            
+
         except NXDOMAIN:
             self.listed[self.dnslist]['ERROR'] = True
             self.listed[self.dnslist]['ERRORTYPE'] = NXDOMAIN
@@ -203,7 +203,7 @@ class RBLSearch(object):
                 if not 'ERROR' in listed['SEARCH_HOST']:
                     continue
                 else:
-                    print "Error querying for %s" % self.lookup_host
+                    print("Error querying for %s" % self.lookup_host)
                     break
 
             if not listed[key].get('ERROR'):
