@@ -133,13 +133,12 @@ class Lookup(Thread):
 
 
 class RBLSearch(object):
-    def __init__(self, lookup_host, my_rbl_list=None):
+    def __init__(self, lookup_host):
         self.lookup_host = lookup_host
         self._listed = None
         self.resolver = Resolver()
         self.resolver.timeout = 0.2
         self.resolver.lifetime = 1.0
-        self.my_rbl_list = my_rbl_list
 
     def search(self, RBLS=RBLS):
         if self._listed is not None:
@@ -182,9 +181,6 @@ class RBLSearch(object):
             threads = []
 
             lists_to_check = RBLS
-
-            if self.my_rbl_list:
-                lists_to_check = self.my_rbl_list
 
             for LIST in lists_to_check:
                 self._listed[LIST] = {'LISTED': False}
