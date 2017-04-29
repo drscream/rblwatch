@@ -111,7 +111,7 @@ class Lookup(Thread):
                             text_record[0].strings])
             self.listed[self.dnslist]['ERROR'] = False
 
-            if b'query refused' in self.listed[self.dnslist]['TEXT'].lower():
+            if 'query refused' in self.listed[self.dnslist]['TEXT'].lower():
                 self.listed[self.dnslist]['LISTED'] = False
                 self.listed[self.dnslist]['ERROR'] = True
 
