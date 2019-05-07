@@ -74,8 +74,6 @@ RBLS = [
     'spamlist.or.kr',
     'spamrbl.imp.ch',
     't3direct.dnsbl.net.au',
-    'tor.dnsbl.sectoor.de',
-    'torserver.tor.dnsbl.sectoor.de',
     'ubl.lashback.com',
     'ubl.unsubscore.com',
     'virbl.bit.nl',
